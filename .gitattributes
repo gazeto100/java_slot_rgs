@@ -1,0 +1,3 @@
+# Store text files with LF in the repo and check them out with LF on every OS.
+# Overrides each developer's core.autocrlf, so Linux containers get the same bytes.
+* text=auto eol=lf
