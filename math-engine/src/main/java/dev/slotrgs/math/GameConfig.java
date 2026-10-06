@@ -6,12 +6,29 @@ import java.util.Objects;
 
 /**
  * Everything that defines a slot game's math: reels, visible rows, paytable and paylines.
+ *
+ * <p>{@code gameId} and {@code mathVersion} identify this exact math. Any change to reels, paytable
+ * or lines must bump {@code mathVersion}, so stored rounds can be replayed with the math they were played with.
  */
-public record GameConfig(List<ReelStrip> reels, int rows, Paytable paytable, List<Line> lines) {
+public record GameConfig(
+        String gameId,
+        int mathVersion,
+        List<ReelStrip> reels,
+        int rows,
+        Paytable paytable,
+        List<Line> lines) {
 
     public static final int REELS = 5;
 
     public GameConfig {
+        Objects.requireNonNull(gameId, "gameId");
+        if (gameId.isBlank()) {
+            throw new IllegalArgumentException("Game id must not be blank");
+        }
+        if (mathVersion < 1) {
+            throw new IllegalArgumentException("Math version must be positive, got " + mathVersion);
+        }
+
         reels = List.copyOf(reels);
         lines = List.copyOf(lines);
         Objects.requireNonNull(paytable, "paytable");
