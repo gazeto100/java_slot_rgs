@@ -46,6 +46,10 @@ public record GameConfig(
                         "Reel " + reel + " has fewer symbols than " + rows + " rows");
             }
         }
+        // SlotEngine takes the line symbol from the first reel, so a line must never start with WILD.
+        if (reels.get(0).symbols().contains(Symbol.WILD)) {
+            throw new IllegalArgumentException("WILD is not allowed on the first reel");
+        }
 
         if (lines.isEmpty()) {
             throw new IllegalArgumentException("At least one line is required");

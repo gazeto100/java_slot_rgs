@@ -35,10 +35,11 @@ public final class SlotEngine {
         List<LineWin> lineWins = new ArrayList<>();
         for (int lineIndex = 0; lineIndex < config.lines().size(); lineIndex++) {
             Line line = config.lines().get(lineIndex);
+            // Never WILD: GameConfig keeps WILD off the first reel.
             Symbol first = grid.get(0).get(line.rowOn(0));
 
             int count = 1;
-            while (count < GameConfig.REELS && grid.get(count).get(line.rowOn(count)) == first) {
+            while (count < GameConfig.REELS && matches(grid.get(count).get(line.rowOn(count)), first)) {
                 count++;
             }
 
@@ -48,6 +49,13 @@ public final class SlotEngine {
             }
         }
         return new SpinResult(lineWins);
+    }
+
+    /**
+     * WILD substitutes for any symbol. SCATTER has no line pays, so a WILD next to it never pays on a line.
+     */
+    private static boolean matches(Symbol symbol, Symbol lineSymbol) {
+        return symbol == lineSymbol || symbol == Symbol.WILD;
     }
 
     /** Visible symbols indexed as {@code grid.get(reel).get(row)}. */

@@ -3,6 +3,7 @@ package dev.slotrgs.math;
 import static dev.slotrgs.math.Symbol.CHERRY;
 import static dev.slotrgs.math.Symbol.LEMON;
 import static dev.slotrgs.math.Symbol.SEVEN;
+import static dev.slotrgs.math.Symbol.WILD;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,6 +23,7 @@ class GameConfigTest {
     private static final String GAME_ID = "test-game";
     private static final int VERSION = 1;
     private static final ReelStrip REEL = new ReelStrip(List.of(CHERRY, LEMON, SEVEN));
+    private static final ReelStrip WILD_REEL = new ReelStrip(List.of(CHERRY, WILD, SEVEN));
     private static final List<ReelStrip> FIVE_REELS = Collections.nCopies(5, REEL);
     private static final Paytable PAYTABLE = new Paytable(Map.of(CHERRY, new LinePays(8, 25, 100)));
     private static final List<Line> LINES = List.of(Line.of(1, 1, 1, 1, 1), Line.of(0, 1, 2, 1, 0));
@@ -68,6 +70,19 @@ class GameConfigTest {
     void rejectsWrongNumberOfReels() {
         assertThrows(IllegalArgumentException.class,
                 () -> new GameConfig(GAME_ID, VERSION, Collections.nCopies(4, REEL), 3, PAYTABLE, LINES));
+    }
+
+    @Test
+    void acceptsWildOnReelsTwoToFive() {
+        List<ReelStrip> reels = List.of(REEL, WILD_REEL, WILD_REEL, WILD_REEL, WILD_REEL);
+        assertDoesNotThrow(() -> new GameConfig(GAME_ID, VERSION, reels, 3, PAYTABLE, LINES));
+    }
+
+    @Test
+    void rejectsWildOnFirstReel() {
+        List<ReelStrip> reels = List.of(WILD_REEL, REEL, REEL, REEL, REEL);
+        assertThrows(IllegalArgumentException.class,
+                () -> new GameConfig(GAME_ID, VERSION, reels, 3, PAYTABLE, LINES));
     }
 
     @Test

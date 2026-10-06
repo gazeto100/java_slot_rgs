@@ -7,6 +7,7 @@ import static dev.slotrgs.math.Symbol.ORANGE;
 import static dev.slotrgs.math.Symbol.PLUM;
 import static dev.slotrgs.math.Symbol.SEVEN;
 import static dev.slotrgs.math.Symbol.WATERMELON;
+import static dev.slotrgs.math.Symbol.WILD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -76,6 +77,33 @@ class SlotEngineTest {
                 new LineWin(1, GRAPES, 4, 400),
                 new LineWin(2, ORANGE, 3, 50)), result.lineWins());
         assertEquals(450, result.totalWin());
+    }
+
+    @Test
+    void wildSubstitutesForLineSymbol() {
+        SlotEngine engine = engineShowing(
+                List.of(CHERRY, LEMON, ORANGE, PLUM, GRAPES),
+                List.of(SEVEN, WILD, SEVEN, WILD, SEVEN),
+                List.of(CHERRY, LEMON, ORANGE, PLUM, GRAPES));
+
+        SpinResult result = engine.evaluate(ZERO_STOPS, 1);
+
+        assertEquals(List.of(new LineWin(0, SEVEN, 5, 1000)), result.lineWins());
+    }
+
+    @Test
+    void wildSubstitutesOnEveryLineThroughIt() {
+        SlotEngine engine = engineShowing(
+                List.of(CHERRY, WILD, WILD, LEMON, GRAPES),
+                List.of(PLUM, ORANGE, GRAPES, ORANGE, LEMON),
+                List.of(SEVEN, GRAPES, ORANGE, GRAPES, CHERRY));
+
+        SpinResult result = engine.evaluate(ZERO_STOPS, 1);
+
+        // Line 1 (top row) and line 5 (middle, then top on reels 2-4) both pass through the two WILDs.
+        assertEquals(List.of(
+                new LineWin(1, CHERRY, 3, 8),
+                new LineWin(5, PLUM, 3, 10)), result.lineWins());
     }
 
     @Test
