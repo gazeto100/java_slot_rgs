@@ -15,6 +15,7 @@ Plan and working rules: see `CLAUDE.md`.
 - **Extra — `.gitattributes`.** `* text=auto eol=lf`: LF in the repo and in every working copy, regardless of `core.autocrlf`. All files renormalized (they were already LF).
 - **Step 3 — `ReelStrip`.** Immutable `record ReelStrip(List<Symbol> symbols)`: defensive `List.copyOf` in the compact constructor, rejects empty/null. `window(stop, rows)` returns the visible symbols top-to-bottom with wrap-around; stop = index of the top row, must be in `[0, size)`; rows in `[1, size]`. `mvn test` → 12 tests, BUILD SUCCESS.
 - **Step 4 — `Paytable`.** `record Paytable(Map<Symbol, LinePays> pays)` with nested `record LinePays(three, four, five)` (positive, non-decreasing). Stored as unmodifiable `EnumMap`. `multiplier(symbol, count)` → line-bet multiplier (`int`), 0 for count < 3 or symbols without pays; count must be in `[1, 5]`. Line pays only — scatter pays come in step 9; the actual ClassicFruit20 values are wired in `GameConfig` (step 5). `mvn test` → 30 tests, BUILD SUCCESS.
+- **Step 5 — Lines and `GameConfig`.** `record Line(List<Integer> rows)` (row per reel, 0 = top) with `Line.of(int...)` and `rowOn(reel)`. `record GameConfig(reels, rows, paytable, lines)` validates: exactly `REELS` = 5 reels (own constant: reel count is a game property, not the paytable's), rows ≥ 1, each reel ≥ rows symbols, non-empty distinct lines of length 5 with rows in range. `ClassicFruit20` holds the spec constants: `ROWS = 3`, `PAYTABLE`, 20 `LINES` (line shapes chosen by us — spec doesn't fix them; to be confirmed by user). Reel strips not yet defined (steps 11–12). `mvn test` → 53 tests, BUILD SUCCESS.
 
 ## Next
-- **Step 5 — Lines and `GameConfig`.**
+- **Step 6 — `Rng` interface + `SecureRng` + `SeededRng`.**
